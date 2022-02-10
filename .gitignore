@@ -4,3 +4,7 @@ projectfiles
 *.py*
 BUILD
 mbed-os
+compile_commands.json
+.clangd
+.cache
+arduino-mbed-mashup
