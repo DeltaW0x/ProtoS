@@ -1,22 +1,31 @@
-/* mbed Microcontroller Library
- * Copyright (c) 2019 ARM Limited
- * SPDX-License-Identifier: Apache-2.0
- */
 
+#include "MaxMatrix/MaxMatrix.hpp"
 #include "mbed.h"
+#include <cstdint>
 
+MaxMatrix *matrix;
 
-// Blinking rate in milliseconds
-#define BLINKING_RATE     500ms
-
+const uint8_t mawL[] = {32,         8,          0b00000000, 0b00000000, 0b00000000, 0b00000111, 0b00011111,
+                        0b01111000, 0b11100000, 0b10000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
+                        0b11100000, 0b01111000, 0b00011110, 0b00000111, 0b00000000, 0b00000000, 0b00000000,
+                        0b00000001, 0b00000111, 0b00011110, 0b01111000, 0b11100000, 0b00000100, 0b00011110,
+                        0b01111011, 0b11100011, 0b11111111, 0b00000000, 0b00000000, 0b00000000};
 
 int main()
 {
-    // Initialise the digital pin LED1 as an output
-    DigitalOut led(LED1);
+    PinName CS = D7;
+    PinName DIN = D6;
+    PinName CLK = D8;
 
-    while (true) {
-        led = !led;
-        ThisThread::sleep_for(BLINKING_RATE);
-    }
+    uint8_t maxInUse = 4;
+
+    matrix = new MaxMatrix(DIN,CS,CLK,maxInUse);
+
+    matrix->init();
+    matrix->clear();
+    matrix->setIntensity(3);
+    matrix->clear();
+
+    
+    matrix->writeSprite(0,0,mawL);
 }
