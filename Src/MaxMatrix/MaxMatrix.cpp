@@ -1,126 +1,86 @@
-#include <cstdint>
+/*
+ * MaxMatrix
+ * Version 1.0 Feb 2013
+ * Copyright 2013 Oscar Kin-Chung Au
+ * Adapted by DeltaWave0x
+ */
+ 
 
 #include "MaxMatrix.hpp"
 
-MaxMatrix::MaxMatrix(PinName _data, PinName _load, PinName _clock, uint8_t _num)
+MaxMatrix::MaxMatrix(PinName dataPin, PinName loadPin, PinName clockPin, uint8_t _num)
 {
-    m_data = new DigitalOut(_data);
-    m_load = new DigitalOut(_load);
-    m_clock = new DigitalOut(_clock);
+    num = _num;
+
+    data = new DigitalOut(dataPin);
+    clk = new DigitalOut(clockPin);
+    load = new DigitalOut(loadPin);
 
     for (int i = 0; i < 112; i++)
     {
-        m_buffer[i] = 0;
+        buffer[i] = 0;
     }
 }
-MaxMatrix::~MaxMatrix()
+
+void MaxMatrix::setDot(uint8_t col, uint8_t row, uint8_t value)
 {
-    delete m_data;
-    delete m_load;
-    delete m_clock;
-}
+    bitWrite(buffer[col], row, value);
 
-void MaxMatrix::init()
-{
-    m_clock->write(1);
-
-    setCommand(max7219_reg_scanLimit, 0x07);
-    setCommand(max7219_reg_decodeMode, 0x00);  // using an led matrix (not digits)
-    setCommand(max7219_reg_shutdown, 0x01);    // not in shutdown mode
-    setCommand(max7219_reg_displayTest, 0x00); // no display test
-
-    // empty registers, turn all LEDs off
-    clear();
-
-    setIntensity(0x0f); // the first 0x0f is the value you can set
-}
-
-void MaxMatrix::setIntensity(uint8_t intensity)
-{
-    setCommand(max7219_reg_intensity, intensity);
-}
-
-void MaxMatrix::clear()
-{
-    for (int i = 0; i < 8; i++)
-        setColumnAll(i, 0);
-
-    for (int i = 0; i < 112; i++)
-        m_buffer[i] = 0;
-}
-
-void MaxMatrix::setCommand(uint8_t command, uint8_t value)
-{
-    m_load->write(0);
-    for (int i = 0; i < m_num; i++)
+    int n = col / 8;
+    int c = col % 8;
+    load->write(0);
+    for (int i = 0; i < num; i++)
     {
-        shiftOut(*m_data, *m_clock, bitOrder::MSBFIRST, command);
-        shiftOut(*m_data, *m_clock, bitOrder::MSBFIRST, value);
+        if (i == n)
+        {
+            shiftOut(data, clk, MSBFIRST, c + 1);
+            shiftOut(data, clk, MSBFIRST, buffer[col]);
+        }
+        else
+        {
+            shiftOut(data, clk, MSBFIRST, 0);
+            shiftOut(data, clk, MSBFIRST, 0);
+        }
     }
-    m_load->write(0);
-    m_load->write(1);
+    load->write(0);
+    load->write(1);
 }
 
 void MaxMatrix::setColumn(uint8_t col, uint8_t value)
 {
     int n = col / 8;
     int c = col % 8;
-    m_load->write(0);
-
-    for (int i = 0; i < m_num; i++)
+    load->write(0);
+    for (int i = 0; i < num; i++)
     {
         if (i == n)
         {
-            shiftOut(*m_data, *m_clock, MSBFIRST, c + 1);
-            shiftOut(*m_data, *m_clock, MSBFIRST, value);
+            shiftOut(data, clk, MSBFIRST, c + 1);
+            shiftOut(data, clk, MSBFIRST, value);
         }
         else
         {
-            shiftOut(*m_data, *m_clock, MSBFIRST, 0);
-            shiftOut(*m_data, *m_clock, MSBFIRST, 0);
+            shiftOut(data, clk, MSBFIRST, 0);
+            shiftOut(data, clk, MSBFIRST, 0);
         }
     }
-    m_load->write(0);
-    m_load->write(1);
+    load->write(0);
+    load->write(1);
 
-    m_buffer[col] = value;
+    buffer[col] = value;
 }
 
 void MaxMatrix::setColumnAll(uint8_t col, uint8_t value)
 {
-    m_load->write(0);
-    for (int i = 0; i < m_num; i++)
+    load->write(0);
+    for (int i = 0; i < num; i++)
     {
-        shiftOut(*m_data, *m_clock, MSBFIRST, col + 1);
-        shiftOut(*m_data, *m_clock, MSBFIRST, value);
-        m_buffer[col * i] = value;
+        shiftOut(data, clk, MSBFIRST, col + 1);
+        shiftOut(data, clk, MSBFIRST, value);
+        buffer[col * i] = value;
     }
-    m_load->write(0);
-    m_load->write(1);
-}
-
-void MaxMatrix::setDot(uint8_t col, uint8_t row, uint8_t value)
-{
-    bitWrite(m_buffer[col], row, value);
-
-    int n = col / 8;
-    int c = col % 8;
-    m_load->write(0);
-    for (int i = 0; i < m_num; i++)
-    {
-        if (i == n)
-        {
-            shiftOut(*m_data, *m_clock, MSBFIRST, c + 1);
-            shiftOut(*m_data, *m_clock, MSBFIRST, m_buffer[col]);
-        }
-        else
-        {
-            shiftOut(*m_data, *m_clock, MSBFIRST, 0);
-            shiftOut(*m_data, *m_clock, MSBFIRST, 0);
-        }
-    }
-    m_load->write(0);
-    m_load->write(1);
+    load->write(0);
+    load->write(1);
 }
 
 void MaxMatrix::writeSprite(int x, int y, const uint8_t *sprite)
@@ -151,106 +111,71 @@ void MaxMatrix::reload()
     for (int i = 0; i < 8; i++)
     {
         int col = i;
-        m_load->write(0);
-        for (int j = 0; j < m_num; j++)
+        load->write(0);
+        for (int j = 0; j < num; j++)
         {
-            shiftOut(*m_data, *m_clock, MSBFIRST, i + 1);
-            shiftOut(*m_data, *m_clock, MSBFIRST, m_buffer[col]);
+            shiftOut(data, clk, MSBFIRST, i + 1);
+            shiftOut(data, clk, MSBFIRST, buffer[col]);
             col += 8;
         }
-        m_load->write(0);
-        m_load->write(1);
+        load->write(0);
+        load->write(1);
     }
 }
 
-void MaxMatrix::shiftLeft(bool rotate, bool fill_zero)
+void MaxMatrix::setCommand(uint8_t command, uint8_t value)
 {
-    uint8_t old = m_buffer[0];
-    int i;
-    for (i = 0; i < 112; i++)
+    load->write(0);
+    for (int i = 0; i < num; i++)
     {
-        m_buffer[i] = m_buffer[i + 1];
+        shiftOut(data, clk, MSBFIRST, command);
+        shiftOut(data, clk, MSBFIRST, value);
     }
-
-    if (rotate)
-    {
-        m_buffer[m_num * 8 - 1] = old;
-    }
-
-    else if (fill_zero)
-    {
-        m_buffer[m_num * 8 - 1] = 0;
-    }
-
-    reload();
+    load->write(0);
+    load->write(1);
 }
 
-void MaxMatrix::shiftRight(bool rotate, bool fill_zero)
+void MaxMatrix::clear()
 {
-    int last = m_num * 8 - 1;
-    uint8_t old = m_buffer[last];
-    int i;
-    for (i = 111; i > 0; i--)
-    {
-        m_buffer[i] = m_buffer[i - 1];
-    }
-    if (rotate)
-    {
-        m_buffer[0] = old;
-    }
-    else if (fill_zero)
-    {
-        m_buffer[0] = 0;
-    }
+    for (int i = 0; i < 8; i++)
+        setColumnAll(i, 0);
 
-    reload();
+    for (int i = 0; i < 112; i++)
+        buffer[i] = 0;
 }
 
-void MaxMatrix::shiftUp(bool rotate)
+void MaxMatrix::setIntensity(uint8_t intensity)
 {
-    for (int i = 0; i < m_num * 8; i++)
-    {
-        bool b = m_buffer[i] & 1;
-        m_buffer[i] >>= 1;
-        if (rotate)
-        {
-            bitWrite(m_buffer[i], 7, b);
-        }
-    }
-    reload();
+    setCommand(max7219_reg_intensity, intensity);
 }
 
-void MaxMatrix::shiftDown(bool rotate)
+void MaxMatrix::init()
 {
-    for (int i = 0; i < m_num * 8; i++)
-    {
-        bool b = m_buffer[i] & 128;
-        m_buffer[i] <<= 1;
-        if (rotate)
-        {
-            bitWrite(m_buffer[i], 0, b);
-        }
-    }
-    reload();
+    clk->write(1);
+
+    setCommand(max7219_reg_scanLimit, 0x07);
+    setCommand(max7219_reg_decodeMode, 0x00);  // using an led matrix (not digits)
+    setCommand(max7219_reg_shutdown, 0x01);    // not in shutdown mode
+    setCommand(max7219_reg_displayTest, 0x00); // no display test
+
+    // empty registers, turn all LEDs off
+    clear();
+
+    setIntensity(0x0f); // the first 0x0f is the value you can set
 }
 
-void MaxMatrix::shiftOut(DigitalOut &dataPin, DigitalOut &clockPin, uint8_t bitOrder, uint8_t val)
+void MaxMatrix::shiftOut(DigitalOut *dataPin, DigitalOut *clockPin, uint8_t bitOrder, uint8_t val)
 {
     uint8_t i;
+
     for (i = 0; i < 8; i++)
     {
-        if (bitOrder == bitOrder::LSBFIRST)
-        {
-            dataPin.write(val & 1);
-            val >>= 1;
-        }
+        if (bitOrder == LSBFIRST)
+            dataPin->write(!!(val & (1 << i)));
         else
-        {
-            dataPin.write((val & 128) != 0);
-            val <<= 1;
-        }
+            dataPin->write(!!(val & (1 << (7 - i))));
 
-        clockPin.write(1);
-        clockPin.write(0);
+        clockPin->write(1);
+        clockPin->write(0);
     }
 }

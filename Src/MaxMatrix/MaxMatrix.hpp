@@ -1,7 +1,16 @@
-#pragma once
+/*
+ * MaxMatrix
+ * Version 1.0 Feb 2013
+ * Copyright 2013 Oscar Kin-Chung Au
+ * Adapted by DeltaWave0x
+ */
+
+#include <cstdint>
 
 #include "mbed.h"
-#include <stdint.h>
+
+#define LSBFIRST 0
+#define MSBFIRST 1
 
 #define max7219_reg_noop 0x00
 #define max7219_reg_digit0 0x01
@@ -25,42 +34,32 @@
 
 class MaxMatrix
 {
+  private:
+    uint8_t num;
+    uint8_t buffer[112];
+
+    DigitalOut *data;
+    DigitalOut *clk;
+    DigitalOut *load;
+
+    void shiftOut(DigitalOut *dataPin, DigitalOut *clockPin, uint8_t bitOrder, uint8_t val);
 
   public:
-    MaxMatrix(PinName data, PinName load, PinName clock, uint8_t num);
-    ~MaxMatrix();
+    MaxMatrix(PinName dataPin, PinName loadPin, PinName clockPin, uint8_t _num);
 
-    void init();
-    void clear();
-
-    void setCommand(uint8_t command, uint8_t value);
-    void setIntensity(uint8_t intensity);
-    void setColumn(uint8_t col, uint8_t value);
-    void setColumnAll(uint8_t col, uint8_t value);
     void setDot(uint8_t col, uint8_t row, uint8_t value);
+    void setColumn(uint8_t col, uint8_t value);
+
+    void setColumnAll(uint8_t col, uint8_t value);
 
     void writeSprite(int x, int y, const uint8_t *sprite);
 
-    void shiftLeft(bool rotate = false, bool fill_zero = true);
-    void shiftRight(bool rotate = false, bool fill_zero = true);
-    void shiftUp(bool rotate = false);
-    void shiftDown(bool rotate = false);
-
-  private:
-    DigitalOut *m_data;
-    DigitalOut *m_load;
-    DigitalOut *m_clock;
-
-    uint8_t m_num;
-    uint8_t m_buffer[112];
-
-    enum bitOrder
-    {
-        MSBFIRST,
-        LSBFIRST
-    };
-
     void reload();
 
-    void shiftOut(DigitalOut &dataPin, DigitalOut &clockPin, uint8_t bitOrder, uint8_t val);
+    void setCommand(uint8_t command, uint8_t value);
+
+    void clear();
+
+    void setIntensity(uint8_t intensity);
+    void init();
 };
