@@ -13,9 +13,9 @@ const uint8_t mawL[] = {32,         8,          0b00000000, 0b00000000, 0b000000
 
 int main()
 {
-    PinName CS = D7;
-    PinName DIN = D6;
-    PinName CLK = D8;
+    PinName CS = D6;
+    PinName DIN = D7;
+    PinName CLK = D5;
 
     uint8_t maxInUse = 4;
 
