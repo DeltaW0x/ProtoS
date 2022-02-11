@@ -19,6 +19,11 @@ int main()
 
     while (true)
     {
+        m->setIntensity(0xF);
         m->writeSprite(0, 0, mawL);
+        ThisThread::sleep_for(1s);
+
+        m->clear();
+        ThisThread::sleep_for(1s);
     }
 }
