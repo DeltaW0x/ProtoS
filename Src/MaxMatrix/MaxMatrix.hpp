@@ -4,6 +4,7 @@
  * Copyright 2013 Oscar Kin-Chung Au
  * Adapted by DeltaWave0x
  */
+#pragma once
 
 #include <cstdint>
 
