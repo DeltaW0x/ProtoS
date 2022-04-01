@@ -5,4 +5,4 @@ The code has been adapted to work on STM32 Nucleos instead of arduino.
 
 # Build instructions
 ``` No lmao ```
-![lmao](thumb_open-eye-crying-laughing-emoji-know-your-meme-53997876.png)
+![lmao](/resources/thumb_open-eye-crying-laughing-emoji-know-your-meme-53997876.png)
