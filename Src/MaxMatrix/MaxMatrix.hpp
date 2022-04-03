@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <chrono>
 
 #include "mbed.h"
 
@@ -46,14 +47,15 @@ class MaxMatrix
     void shiftOut(DigitalOut *dataPin, DigitalOut *clockPin, uint8_t bitOrder, uint8_t val);
 
   public:
+
     MaxMatrix(PinName dataPin, PinName loadPin, PinName clockPin, uint8_t _num);
 
     void setDot(uint8_t col, uint8_t row, uint8_t value);
     void setColumn(uint8_t col, uint8_t value);
-
     void setColumnAll(uint8_t col, uint8_t value);
 
     void writeSprite(int x, int y, const uint8_t *sprite);
+    void fadeToFromSprite(int x, int y,uint8_t fadeTime, uint8_t targetBrightness, const uint8_t *sprite_new,const uint8_t *sprite_old);
 
     void reload();
 

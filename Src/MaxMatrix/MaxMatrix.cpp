@@ -106,6 +106,32 @@ void MaxMatrix::writeSprite(int x, int y, const uint8_t *sprite)
             }
 }
 
+void MaxMatrix::fadeToFromSprite(int x, int y,uint8_t fadeTime,uint8_t targetBrightness , const uint8_t *sprite_new,const uint8_t *sprite_old){
+
+     Timer fadeTimer;
+
+     for (int i = 0; i < targetBrightness; i++){
+           fadeTimer.start();
+
+           do{
+                setIntensity(15-i);
+                writeSprite(x, y, sprite_old);
+                ThisThread::sleep_for(2ms);
+                clear();
+
+                setIntensity(i);
+                writeSprite(x, y, sprite_new);
+                ThisThread::sleep_for(2ms);
+                clear();
+
+           }while(fadeTimer.elapsed_time() < fadeTime);
+
+           fadeTimer.stop();
+           fadeTimer.reset();
+       }
+}
+
+
 void MaxMatrix::reload()
 {
     for (int i = 0; i < 8; i++)
