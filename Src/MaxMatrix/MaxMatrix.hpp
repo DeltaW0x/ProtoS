@@ -2,7 +2,7 @@
  * MaxMatrix
  * Version 1.0 Feb 2013
  * Copyright 2013 Oscar Kin-Chung Au
- * Adapted by DeltaWave0x
+ * Modified by DeltaWave0x
  */
 #pragma once
 
