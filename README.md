@@ -3,9 +3,9 @@
 Protogen Operating System. The core program (mainly maxmatrix) is based on [Feronium's](https://twitter.com/Feronium) [code](https://drive.google.com/drive/folders/1Lg3Bc87zb9SVc_UkhNNFRUWpvKLzR5WE), but adapted to work on STM32 Nucleos instead of arduino, as well as few modifications other modifications. 
 
 <details>
-  <summary>Spoiler warning</summary>
+  <summary>Important Info</summary>
   
-  Stm32 >> Arduino 
+  Stm32 >> Arduino. Fight me
   
 </details>
 
