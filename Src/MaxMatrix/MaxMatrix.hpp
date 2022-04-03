@@ -37,7 +37,7 @@ class MaxMatrix
 {
   private:
     uint8_t num;
-    uint8_t buffer[112];
+    uint8_t buffer[120];
 
     DigitalOut *data;
     DigitalOut *clk;

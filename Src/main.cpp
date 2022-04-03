@@ -36,7 +36,7 @@ const uint8_t square[] =    {8, 8,
 
 
 
-#define t 10ms
+#define t 2ms
 int main()
 {
     MaxMatrix *m = new MaxMatrix(A7, A5, A6, 2);

@@ -16,7 +16,7 @@ MaxMatrix::MaxMatrix(PinName dataPin, PinName loadPin, PinName clockPin, uint8_t
     clk = new DigitalOut(clockPin);
     load = new DigitalOut(loadPin);
 
-    for (int i = 0; i < 112; i++)
+    for (int i = 0; i < 120; i++)
     {
         buffer[i] = 0;
     }
@@ -92,7 +92,7 @@ void MaxMatrix::writeSprite(int x, int y, const uint8_t *sprite)
         for (int i = 0; i < w; i++)
         {
             int c = x + i;
-            if (c >= 0 && c < 112)
+            if (c >= 0 && c < 120)
                 setColumn(c, sprite[i + 2]);
         }
     else
@@ -101,7 +101,7 @@ void MaxMatrix::writeSprite(int x, int y, const uint8_t *sprite)
             {
                 int c = x + i;
                 int r = y + j;
-                if (c >= 0 && c < 112 && r >= 0 && r < 8)
+                if (c >= 0 && c < 120 && r >= 0 && r < 8)
                     setDot(c, r, bitRead(sprite[i + 2], j));
             }
 }
@@ -140,7 +140,7 @@ void MaxMatrix::clear()
     for (int i = 0; i < 8; i++)
         setColumnAll(i, 0);
 
-    for (int i = 0; i < 112; i++)
+    for (int i = 0; i < 120; i++)
         buffer[i] = 0;
 }
 
