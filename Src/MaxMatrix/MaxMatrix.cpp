@@ -124,7 +124,7 @@ void MaxMatrix::fadeToFromSprite(int x, int y,uint8_t fadeTime,uint8_t targetBri
                 ThisThread::sleep_for(2ms);
                 clear();
 
-           }while(fadeTimer.elapsed_time() < fadeTime);
+           }while(fadeTimer.elapsed_time().count() < fadeTime);
 
            fadeTimer.stop();
            fadeTimer.reset();
