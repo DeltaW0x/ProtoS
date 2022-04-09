@@ -8,8 +8,7 @@
 
 #include <cstdint>
 #include <chrono>
-
-#include "mbed.h"
+#include <mbed.h>
 
 #define LSBFIRST 0
 #define MSBFIRST 1
